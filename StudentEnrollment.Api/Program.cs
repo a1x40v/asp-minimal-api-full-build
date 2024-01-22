@@ -31,29 +31,46 @@ if (app.Environment.IsDevelopment())
 // app.UseHttpsRedirection();
 app.UseCors("AllowAll");
 
-var summaries = new[]
+app.MapGet("/courses", async (StudentEnrollmentDbContext dbContext) =>
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+    return await dbContext.Courses.ToListAsync();
+});
 
-app.MapGet("/weatherforecast", () =>
+app.MapGet("/courses/{id}", async (StudentEnrollmentDbContext dbContext, int id) =>
 {
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
+    return await dbContext.Courses.FindAsync(id) is Course course ? Results.Ok(course) : Results.NotFound();
+});
+
+app.MapPost("/courses", async (StudentEnrollmentDbContext dbContext, Course course) =>
+{
+    dbContext.Courses.Add(course);
+    await dbContext.SaveChangesAsync();
+
+    return Results.Created($"/courses/{course.Id}", course);
+});
+
+app.MapPut("/courses/{id}", async (StudentEnrollmentDbContext dbContext, int id, Course course) =>
+{
+    var record = await dbContext.Courses.FindAsync(id);
+    if (record == null) return Results.NotFound();
+
+    record.Credits = course.Credits;
+    record.Title = course.Title;
+
+    await dbContext.SaveChangesAsync();
+
+    return Results.NoContent();
+});
+
+app.MapDelete("/courses/{id}", async (StudentEnrollmentDbContext dbContext, int id) =>
+{
+    var record = await dbContext.Courses.FindAsync(id);
+    if (record == null) return Results.NotFound();
+
+    dbContext.Remove(record);
+    await dbContext.SaveChangesAsync();
+
+    return Results.NoContent();
+});
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
