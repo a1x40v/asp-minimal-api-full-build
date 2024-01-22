@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using StudentEnrollment.Data;
@@ -11,9 +12,11 @@ using StudentEnrollment.Data;
 namespace StudentEnrollment.Data.Migrations
 {
     [DbContext(typeof(StudentEnrollmentDbContext))]
-    partial class StudentEnrollmentDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240122162014_SeedDefaultRolesAndCourses")]
+    partial class SeedDefaultRolesAndCourses
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
