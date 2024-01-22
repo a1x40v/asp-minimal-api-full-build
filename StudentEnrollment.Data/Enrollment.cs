@@ -1,6 +1,6 @@
 namespace StudentEnrollment.Data;
 
-public class Enrollment
+public class Enrollment : BaseEntity
 {
     public int CourseId { get; set; }
     public int StudentId { get; set; }
